@@ -13,5 +13,5 @@ public interface ItemRepository {
 
     Item updateItem(Integer userId, Integer itemId, Item item);
 
-    Item searchItem(Integer userId, String text);
+    List<Item> searchItem(String text);
 }

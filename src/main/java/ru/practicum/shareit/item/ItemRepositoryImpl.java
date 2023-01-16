@@ -13,7 +13,7 @@ public class ItemRepositoryImpl implements ItemRepository{
     @Override
     public Item get(Integer userId, Integer itemId) {
         if(itemMap.containsKey(userId)){
-            if(itemMap.get(userId) != null || itemMap.get(userId).getId().equals(itemId)){
+            if(itemMap.get(userId).getId().equals(itemId)){
                 return itemMap.get(userId);
             }
         }
@@ -35,24 +35,26 @@ public class ItemRepositoryImpl implements ItemRepository{
     @Override
     public Item updateItem(Integer userId, Integer itemId, Item item) {
         if (itemMap.containsKey(userId)){
-            if(itemMap.get(userId).getId() == itemId){
+            if(Objects.equals(itemMap.get(userId).getId(), itemId)){
             itemMap.remove(userId);
-
             itemMap.put(userId, item);
             }
         }
-        return null;
+        return item;
     }
 
     @Override
-    public Item searchItem(Integer userId, String text) {
-        if(itemMap.get(userId) != null){
-            if(itemMap.get(userId).getDescription().equals(text)){
-                return itemMap.get(userId);
-            }
+    public List<Item> searchItem(String text) {
+        List<Item> itemsList = new ArrayList<>();
+        for (Item item: itemMap.values()) {
+            if(item.getDescription().matches(text)){
+                itemsList.add(item);
         }
-        return null;
-    }
+
+            }return itemsList;
+        }
+
+
 
     private Integer getId() {
       return ++id;

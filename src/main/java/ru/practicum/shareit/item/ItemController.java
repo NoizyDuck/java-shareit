@@ -42,9 +42,8 @@ public class ItemController {
         return itemService.updateItem(userId, itemId, item);
     }
 
-    @GetMapping("/search?text={text}")
-        public Item getSearchItem(@RequestHeader("X-Sharer-User-Id") Integer userId,
-                                  @PathVariable String text){
-        return itemService.searchItem(userId, text);
+    @GetMapping("/search")
+        public List<Item> getSearchItem(@RequestParam(name = "text") String text){
+        return itemService.searchItem(text);
         }
 }

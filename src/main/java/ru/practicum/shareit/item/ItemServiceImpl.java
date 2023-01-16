@@ -37,11 +37,16 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public Item updateItem(Integer userId, Integer itemId, Item item) {
-        return itemRepository.updateItem(userId, itemId, item);
+        User user = userRepository.get(userId);
+        if(user == item.getOwner() || user == itemRepository.get(userId,itemId).getOwner()) {
+            return itemRepository.updateItem(userId, itemId, item);
+        }else{
+        return null;
+        }
     }
 
     @Override
-    public Item searchItem(Integer userId, String text) {
-        return itemRepository.searchItem(userId, text);
+    public List<Item> searchItem(String text) {
+        return itemRepository.searchItem(text);
     }
 }
