@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item;
 
 import org.springframework.stereotype.Component;
+import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
 
@@ -54,9 +55,14 @@ public class ItemRepositoryImpl implements ItemRepository{
             }return itemsList;
         }
 
-
+private void validateItemId(Integer id){
+        if(id != 0 && !itemMap.containsKey(id)){
+            throw new NotFoundException("Item with id " +id + " not found");
+        }
+}
 
     private Integer getId() {
       return ++id;
     }
+
 }

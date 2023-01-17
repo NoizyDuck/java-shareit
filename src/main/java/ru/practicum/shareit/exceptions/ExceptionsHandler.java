@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class ExceptionsHeader {
+
     @Slf4j
     @RestControllerAdvice
     public class ExceptionsHandler {
@@ -37,16 +37,7 @@ public class ExceptionsHeader {
         }
 
 
-        @ExceptionHandler
-        @ResponseStatus(HttpStatus.BAD_REQUEST)
-        public ValidationErrorResponse handleBindException(MethodArgumentNotValidException exp) {
-            //Ошибок валидации может быть несколько - возвращаем информацию по всем полям
-            Map<String, String> errors = exp.getBindingResult().getFieldErrors().stream()
-                    .collect(Collectors.toMap(FieldError::getField,
-                            Objects.requireNonNull(DefaultMessageSourceResolvable::getDefaultMessage)));
-            log.error(errors.toString());
-            return new ValidationErrorResponse(errors);
-        }
+
 
         @ExceptionHandler
         @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
