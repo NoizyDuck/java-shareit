@@ -27,9 +27,9 @@ public class UserServiceImpl implements UserService {
         userRepository.remove(id);
     }
 
-    public User updateUser(User user) {
-        long id = user.getId();
-        log.debug(String.format("Обновление пользователя c id = %d", id));
+    public User updateUser(Integer userid, User user) {
+        user.setId(userid);
+        log.debug(String.format("Обновление пользователя c id = %d", userid));
         return userRepository.update(user);
     }
 

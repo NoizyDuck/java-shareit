@@ -2,44 +2,49 @@ package ru.practicum.shareit.item;
 
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.exceptions.NotFoundException;
+import ru.practicum.shareit.exceptions.NotValidException;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.User;
 
 import java.util.*;
+import java.util.stream.Collectors;
+
 @Component
-public class ItemRepositoryImpl implements ItemRepository{
+public class ItemRepositoryImpl implements ItemRepository {
 
-    private final Map<Integer,Item> itemMap = new HashMap<>();
+
+    private final Map<Integer, Item> items = new HashMap<>();
     private Integer id = 0;
-    @Override
-    public Item get(Integer userId, Integer itemId) {
-        if(itemMap.containsKey(userId)){
-            if(itemMap.get(userId).getId().equals(itemId)){
-                return itemMap.get(userId);
-            }
-        }
-             return null;
-    }
 
     @Override
-    public List<Item> getAllItems(Integer userId) {
+    public Item getItem(Integer userId, Integer itemId) {
+        userIdValidation(userId);
+        if (items.get(userId).getId().equals(itemId)) {
+            return items.get(userId);
+        }
         return null;
+    }
+    public List<Item> getAllItems() {
+        return new ArrayList<>(items.values());
+    }
+    @Override
+    public List<Item> getAllItemsByUserId(Integer userId) {
+        userIdValidation(userId);
+        return items.values().stream().map(item -> items.get(userId)).collect(Collectors.toList());
     }
 
     @Override
     public Item addItem(Integer userId, Item item) {
         item.setId(getId());
-        itemMap.put(userId,item);
+        items.put(userId, item);
         return item;
     }
 
     @Override
     public Item updateItem(Integer userId, Integer itemId, Item item) {
-        if (itemMap.containsKey(userId)){
-            if(Objects.equals(itemMap.get(userId).getId(), itemId)){
-            itemMap.remove(userId);
-            itemMap.put(userId, item);
-            }
+        userIdValidation(userId);
+        if (Objects.equals(items.get(userId).getId(), itemId)) {
+            items.remove(userId);
+            items.put(userId, item);
         }
         return item;
     }
@@ -47,22 +52,35 @@ public class ItemRepositoryImpl implements ItemRepository{
     @Override
     public List<Item> searchItem(String text) {
         List<Item> itemsList = new ArrayList<>();
-        for (Item item: itemMap.values()) {
-            if(item.getDescription().matches(text)){
+        for (Item item : items.values()) {
+            if (item.getDescription().matches(text)) {
                 itemsList.add(item);
-        }
+            }
 
-            }return itemsList;
         }
-
-private void validateItemId(Integer id){
-        if(id != 0 && !itemMap.containsKey(id)){
-            throw new NotFoundException("Item with id " +id + " not found");
-        }
-}
-
-    private Integer getId() {
-      return ++id;
+        return itemsList;
     }
+
+
+    private void userIdValidation(Integer userId) {
+        if (!items.containsKey(userId)) {
+            throw new NotFoundException("User with id " + userId + " not found");
+        }
+    }
+    private void itemIdValidator(Item item) {
+        if (!getAllItems().contains(item)) {
+            throw new NotFoundException("Item with id " + item.getId() + "not found");
+        }
+        if (item.getName().isBlank()) {
+            throw new NotValidException("Name cant be blank");
+        }
+        if (item.getDescription().isBlank()) {
+            throw new NotValidException("Description cant be blank");
+        }
+    }
+    private Integer getId() {
+        return ++id;
+    }
+
 
 }

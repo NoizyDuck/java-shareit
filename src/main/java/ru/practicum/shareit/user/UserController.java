@@ -36,9 +36,9 @@ private final UserService userService;
         log.debug(String.format("Пользователь с id = %d удален", id));
     }
 
-    @PutMapping
-    public User updateUser(@RequestBody @Valid User user) {
-        User saveUser = userService.updateUser(user);
+    @PatchMapping("/{userId}")
+    public User updateUser(@PathVariable Integer userId, @RequestBody @Valid User user) {
+        User saveUser = userService.updateUser(userId,user);
         log.debug(String.format("Пользователь с id = %d был обновлен", saveUser.getId()));
         return saveUser;
     }

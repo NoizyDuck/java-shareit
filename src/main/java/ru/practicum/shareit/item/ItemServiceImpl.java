@@ -1,6 +1,5 @@
 package ru.practicum.shareit.item;
 
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -20,12 +19,12 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public Item getItem(Integer userId, Integer itemId) {
 
-        return itemRepository.get(userId, itemId);
+        return itemRepository.getItem(userId, itemId);
     }
 
     @Override
     public List<Item> getAllItems(Integer userId) {
-        return itemRepository.getAllItems(userId);
+        return itemRepository.getAllItemsByUserId(userId);
     }
 
     @Override
@@ -38,7 +37,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public Item updateItem(Integer userId, Integer itemId, Item item) {
         User user = userRepository.get(userId);
-        if(user == item.getOwner() || user == itemRepository.get(userId,itemId).getOwner()) {
+        if(user == item.getOwner() || user == itemRepository.getItem(userId,itemId).getOwner()) {
             return itemRepository.updateItem(userId, itemId, item);
         }else{
         return null;

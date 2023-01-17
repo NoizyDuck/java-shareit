@@ -36,14 +36,11 @@ import java.util.stream.Collectors;
             return new ErrorResponse(exp.getMessage());
         }
 
-
-
-
-        @ExceptionHandler
-        @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-        public ErrorResponse handleThrowable(final Throwable exp) {
-            log.error("Произошла непредвиденная ошибка.{}", exp.getMessage(), exp);
-            return new ErrorResponse("Произошла непредвиденная ошибка.");
-        }
+//        @ExceptionHandler
+//        @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+//        public ErrorResponse handleThrowable(final Throwable exp) {
+//            log.error("Произошла непредвиденная ошибка.{}", exp.getMessage(), exp);
+//            return new ErrorResponse("Произошла непредвиденная ошибка.");
+//        }
 
     }

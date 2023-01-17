@@ -5,9 +5,9 @@ import ru.practicum.shareit.item.model.Item;
 import java.util.List;
 
 public interface ItemRepository {
-    Item get(Integer userId, Integer itemId);
+    Item getItem(Integer userId, Integer itemId);
 
-    List<Item> getAllItems(Integer userId);
+    List<Item> getAllItemsByUserId(Integer userId);
 
     Item addItem(Integer userId, Item item);
 
