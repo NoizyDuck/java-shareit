@@ -3,26 +3,28 @@ package ru.practicum.shareit.user;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.exceptions.IncorrectParameterException;
 import ru.practicum.shareit.user.userDto.UserDto;
 import ru.practicum.shareit.user.userDto.UserMapper;
 
-import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
-    public List<User> getUsers() {
+    public List<UserDto> getUsers() {
         log.debug("Выдача всех пользователей");
-        return userRepository.getAll();
+
+        return userRepository.getAll().stream().map(userMapper::userToDto).collect(Collectors.toList());
     }
 
-
-    public User getUser(Integer id) {
+    public UserDto getUser(Integer id) {
         log.debug(String.format("Выдача пользователя c id = %d", id));
-        return userRepository.get(id);
+        return userMapper.userToDto(userRepository.get(id));
     }
 
     public void removeUser(Integer id) {
@@ -30,15 +32,16 @@ public class UserServiceImpl implements UserService {
         userRepository.remove(id);
     }
 
-    public User updateUser(Integer userid, User user) {
-        user.setId(userid);
-        log.debug(String.format("Обновление пользователя c id = %d", userid));
-        return userRepository.update(user);
+    public UserDto updateUser(Integer userId, UserDto userDto) {
+        User user = userMapper.DtoToUser(userDto);
+//        user.setId(userId);
+        log.debug(String.format("Обновление пользователя c id = %d", userId));
+        return  userMapper.userToDto(userRepository.update(userId, user));
     }
 
-    public User addUser(UserDto userDto) {
-        User user = userMapper.toUserDto(userDto);
+    public UserDto addUser(UserDto userDto) {
+        User user = userMapper.DtoToUser(userDto);
         log.debug("Добавление пользователя");
-        return userRepository.add(user);
+        return userMapper.userToDto(userRepository.add(user));
     }
 }

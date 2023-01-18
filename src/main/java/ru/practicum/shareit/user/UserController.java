@@ -18,17 +18,17 @@ import java.util.List;
 public class UserController {
 private final UserService userService;
     @GetMapping
-    public List<User> getAllUser(){
-    List<User> userList = userService.getUsers();
+    public List<UserDto> getAllUser(){
+    List<UserDto> userList = userService.getUsers();
         log.debug("Список всех пользователей был выдан");
         return userList;
     }
 
     @GetMapping("/{id}")
-    public User getUser(@PathVariable Integer id) {
-        User user = userService.getUser(id);
+    public UserDto getUser(@PathVariable Integer id) {
+        UserDto userDto = userService.getUser(id);
         log.debug(String.format("Пользователь с id = %d был выдан", id));
-        return user;
+        return userDto;
     }
 
     @DeleteMapping("/{id}")
@@ -38,17 +38,17 @@ private final UserService userService;
     }
 
     @PatchMapping("/{userId}")
-    public User updateUser(@PathVariable Integer userId, @RequestBody @Valid User user) {
-        User saveUser = userService.updateUser(userId,user);
-        log.debug(String.format("Пользователь с id = %d был обновлен", saveUser.getId()));
-        return saveUser;
+    public UserDto updateUser(@RequestBody @Valid UserDto userDto, @PathVariable Integer userId) {
+        UserDto saveUserDto = userService.updateUser(userId,userDto);
+        log.debug(String.format("Пользователь с id = %d был обновлен", userId));
+        return saveUserDto;
     }
 
     @PostMapping
-    public User addUser(@RequestBody @Valid UserDto userDto) {
-        User saveUser = userService.addUser(userDto);
-        log.debug(String.format("Новый пользователь был добавлен. Выданный id = %d", saveUser.getId()));
-        return saveUser;
+    public UserDto addUser(@RequestBody @Valid UserDto userDto) {
+        UserDto saveUserDto = userService.addUser(userDto);
+        log.debug(String.format("Новый пользователь был добавлен. Выданный id = %d", saveUserDto.getId()));
+        return saveUserDto;
     }
 
 }

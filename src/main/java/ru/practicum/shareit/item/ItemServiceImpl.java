@@ -3,35 +3,41 @@ package ru.practicum.shareit.item;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 
 import java.util.List;
+import java.util.stream.Collectors;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
+    private final ItemMapper itemMapper;
 
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
 
     @Override
-    public Item getItem(Integer userId, Integer itemId) {
-
-        return itemRepository.getItem(userId, itemId);
+    public ItemDto getItem(Integer userId, Integer itemId) {
+        return itemMapper.itemToDto(itemRepository.getItem(userId, itemId));
     }
 
     @Override
-    public List<Item> getAllItems(Integer userId) {
-        return itemRepository.getAllItemsByUserId(userId);
+    public List<ItemDto> getAllItems(Integer userId) {
+        return itemRepository.getAllItemsByUserId(userId).stream().
+                map(itemMapper::itemToDto).collect(Collectors.toList());
     }
 
     @Override
-    public Item addItem(Integer userId, Item item) {
+    public ItemDto addItem(Integer userId, ItemDto itemDto) {
+        Item item = itemMapper.DtoToItem(itemDto);
        User user = userRepository.get(userId);
        item.setOwner(user);
-        return itemRepository.addItem(userId,item);
+        return itemMapper.itemToDto(itemRepository.addItem(userId,item));
     }
 
     @Override
@@ -45,8 +51,8 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<Item> searchItem(String text) {
-        return itemRepository.searchItem(text);
+    public List<ItemDto> searchItem(String text) {
+        return itemRepository.searchItem(text).stream().map(itemMapper::itemToDto).collect(Collectors.toList());
     }
 
     @Override

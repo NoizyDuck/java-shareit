@@ -13,7 +13,7 @@ import javax.validation.constraints.NotBlank;
 @AllArgsConstructor
 public class User {
     private Integer id;
-    @NotBlank
+//    @NotBlank
     private String name;
    @Email
    @NotBlank

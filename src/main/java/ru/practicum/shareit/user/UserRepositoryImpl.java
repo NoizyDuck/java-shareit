@@ -31,20 +31,20 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public User update(User user) {
-        validateId(user.getId());
+    public User update(Integer userId, User user) {
+        validateId(userId);
+        user.setId(userId);
         validateEmail(user);
-//        users.put(user.getId(), user);
-//        return user;
-        User patchedUser = users.get(user.getId());
+
+        User updatedUser = users.get(userId);
         if (user.getName() != null && !user.getName().isEmpty()) {
-            patchedUser.setName(user.getName());
+            updatedUser.setName(user.getName());
         }
         if (user.getEmail() != null && !user.getEmail().isEmpty()) {
-            patchedUser.setEmail(user.getEmail());
+            updatedUser.setEmail(user.getEmail());
         }
-        users.put(patchedUser.getId(), patchedUser);
-        return users.get(patchedUser.getId());
+        users.put(userId, updatedUser);
+        return users.get(userId);
     }
 
 
