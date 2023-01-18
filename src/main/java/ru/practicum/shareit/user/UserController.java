@@ -3,6 +3,7 @@ package ru.practicum.shareit.user;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.user.userDto.UserDto;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -44,8 +45,8 @@ private final UserService userService;
     }
 
     @PostMapping
-    public User addUser(@RequestBody @Valid User user) {
-        User saveUser = userService.addUser(user);
+    public User addUser(@RequestBody @Valid UserDto userDto) {
+        User saveUser = userService.addUser(userDto);
         log.debug(String.format("Новый пользователь был добавлен. Выданный id = %d", saveUser.getId()));
         return saveUser;
     }

@@ -29,7 +29,10 @@ public class ItemRepositoryImpl implements ItemRepository {
     @Override
     public List<Item> getAllItemsByUserId(Integer userId) {
         userIdValidation(userId);
-        return items.values().stream().map(item -> items.get(userId)).collect(Collectors.toList());
+        return items.values()
+                .stream()
+                .filter(item -> item.getOwner().getId() == userId)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -53,12 +56,18 @@ public class ItemRepositoryImpl implements ItemRepository {
     public List<Item> searchItem(String text) {
         List<Item> itemsList = new ArrayList<>();
         for (Item item : items.values()) {
-            if (item.getDescription().matches(text)) {
+            if(item.isAvailable() &&
+                    item.getDescription().toLowerCase().contains(text.toLowerCase()) ||
+                    item.getName().toLowerCase().contains(text.toLowerCase())){
                 itemsList.add(item);
             }
-
         }
         return itemsList;
+    }
+
+    @Override
+    public void deleteItem(Integer itemId) {
+      items.values().removeIf(item -> item.getId().equals(itemId));
     }
 
 

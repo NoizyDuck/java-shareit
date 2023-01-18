@@ -3,6 +3,8 @@ package ru.practicum.shareit.user;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.user.userDto.UserDto;
+import ru.practicum.shareit.user.userDto.UserMapper;
 
 import java.util.Collection;
 import java.util.List;
@@ -11,6 +13,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final UserMapper userMapper;
     public List<User> getUsers() {
         log.debug("Выдача всех пользователей");
         return userRepository.getAll();
@@ -33,7 +36,8 @@ public class UserServiceImpl implements UserService {
         return userRepository.update(user);
     }
 
-    public User addUser(User user) {
+    public User addUser(UserDto userDto) {
+        User user = userMapper.toUserDto(userDto);
         log.debug("Добавление пользователя");
         return userRepository.add(user);
     }

@@ -48,4 +48,9 @@ public class ItemServiceImpl implements ItemService {
     public List<Item> searchItem(String text) {
         return itemRepository.searchItem(text);
     }
+
+    @Override
+    public void deleteItem(Integer itemId) {
+        itemRepository.deleteItem(itemId);
+    }
 }

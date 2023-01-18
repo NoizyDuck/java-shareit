@@ -46,4 +46,11 @@ public class ItemController {
         public List<Item> getSearchItem(@RequestParam(name = "text") String text){
         return itemService.searchItem(text);
         }
+
+        @DeleteMapping("/{id}")
+    public void deleteItem(@PathVariable Integer itemId){
+        itemService.deleteItem(itemId);
+        log.debug(String.format("Item with id /%d was deleted", itemId));
+        }
+
 }

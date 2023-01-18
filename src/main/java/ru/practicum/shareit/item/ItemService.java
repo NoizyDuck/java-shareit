@@ -14,4 +14,6 @@ public interface ItemService {
     Item updateItem(Integer userId, Integer itemId, Item item);
 
     List<Item> searchItem(String text);
+
+    void deleteItem(Integer itemId);
 }
