@@ -2,7 +2,6 @@ package ru.practicum.shareit.item;
 
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.exceptions.NotFoundException;
-import ru.practicum.shareit.exceptions.NotValidException;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.*;
@@ -16,39 +15,32 @@ public class ItemRepositoryImpl implements ItemRepository {
     private Integer id = 0;
 
     @Override
-    public Item getItem(Integer userId, Integer itemId) {
-        userIdValidation(userId);
-        if (items.get(userId).getId().equals(itemId)) {
-            return items.get(userId);
+    public Item getItem(Integer itemId) {
+
+        if (items.get(itemId) == null) {
+            throw new NotFoundException("item not found");
         }
-        return null;
-    }
-    public List<Item> getAllItems() {
-        return new ArrayList<>(items.values());
+        return items.get(itemId);
     }
     @Override
     public List<Item> getAllItemsByUserId(Integer userId) {
-        userIdValidation(userId);
         return items.values()
                 .stream()
-                .filter(item -> item.getOwner().getId() == userId)
+                .filter(item -> Objects.equals(item.getOwner().getId(), userId))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public Item addItem(Integer userId, Item item) {
-        item.setId(getId());
-        items.put(userId, item);
+    public Item addItem(Item item) {
+        int id = getId();
+        item.setId(id);
+        items.put(id, item);
         return item;
     }
 
     @Override
     public Item updateItem(Integer userId, Integer itemId, Item item) {
-        userIdValidation(userId);
-        if (Objects.equals(items.get(userId).getId(), itemId)) {
-            items.remove(userId);
-            items.put(userId, item);
-        }
+            items.put(itemId, item);
         return item;
     }
 
@@ -71,22 +63,6 @@ public class ItemRepositoryImpl implements ItemRepository {
     }
 
 
-    private void userIdValidation(Integer userId) {
-        if (!items.containsKey(userId)) {
-            throw new NotFoundException("User with id " + userId + " not found");
-        }
-    }
-    private void itemIdValidator(Item item) {
-        if (!getAllItems().contains(item)) {
-            throw new NotFoundException("Item with id " + item.getId() + "not found");
-        }
-        if (item.getName().isBlank()) {
-            throw new NotValidException("Name cant be blank");
-        }
-        if (item.getDescription().isBlank()) {
-            throw new NotValidException("Description cant be blank");
-        }
-    }
     private Integer getId() {
         return ++id;
     }

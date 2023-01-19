@@ -4,13 +4,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.model.Item;
 
+import javax.validation.Valid;
 import java.util.List;
 
-/**
- * TODO Sprint add-controllers.
- */
 @Slf4j
 @RequiredArgsConstructor
 @RestController
@@ -19,10 +16,9 @@ public class ItemController {
     private final ItemService itemService;
 
     @GetMapping("/{itemId}")
-    public ItemDto getItem(@RequestHeader("X-Sharer-User-Id") Integer userId,
-                           @PathVariable Integer itemId){
+    public ItemDto getItem(@PathVariable Integer itemId){
 
-        return itemService.getItem(userId, itemId);
+        return itemService.getItem(itemId);
     }
 
     @GetMapping
@@ -32,15 +28,15 @@ public class ItemController {
 
     @PostMapping
     public ItemDto createItem(@RequestHeader("X-Sharer-User-Id") Integer userId,
-                    @RequestBody ItemDto itemDto){
+                    @RequestBody @Valid ItemDto itemDto){
         return itemService.addItem(userId, itemDto);
     }
 
     @PatchMapping("/{itemId}")
-    public Item updateItem(@RequestHeader("X-Sharer-User-Id") Integer userId,
+    public ItemDto updateItem(@RequestHeader("X-Sharer-User-Id") Integer userId,
                            @PathVariable Integer itemId,
-                           @RequestBody Item item){
-        return itemService.updateItem(userId, itemId, item);
+                           @RequestBody  ItemDto itemDto){
+        return itemService.updateItem(userId, itemId, itemDto);
     }
 
     @GetMapping("/search")

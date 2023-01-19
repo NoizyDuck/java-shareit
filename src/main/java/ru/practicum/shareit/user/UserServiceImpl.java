@@ -34,7 +34,6 @@ public class UserServiceImpl implements UserService {
     }
 
     public UserDto updateUser(Integer userId, UserDto userDto) {
-//        User user = userMapper.DtoToUser(userDto);
         User user = userRepository.get(userId);
         if (userDto.getEmail() != null) {
             EmailDuplicateCheck(userDto.getEmail());
