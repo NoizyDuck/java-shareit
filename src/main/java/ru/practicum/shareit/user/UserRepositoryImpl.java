@@ -33,17 +33,8 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public User update(Integer userId, User user) {
         validateId(userId);
-        user.setId(userId);
         validateEmail(user);
-
-        User updatedUser = users.get(userId);
-        if (user.getName() != null && !user.getName().isEmpty()) {
-            updatedUser.setName(user.getName());
-        }
-        if (user.getEmail() != null && !user.getEmail().isEmpty()) {
-            updatedUser.setEmail(user.getEmail());
-        }
-        users.put(userId, updatedUser);
+        users.put(userId, user);
         return users.get(userId);
     }
 
@@ -56,6 +47,15 @@ public class UserRepositoryImpl implements UserRepository {
         return user;
     }
 
+    @Override
+    public Optional<User> getByEmail(String email) {
+        return users.values()
+                .stream()
+                .filter(user -> user.getEmail().equals(email))
+                .findFirst();
+    }
+
+
     private void validateId(Integer id) {
         if (id != 0 && !users.containsKey(id)) {
             throw new NotFoundException("User with id " + id + " not registered");
@@ -63,14 +63,15 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     private void validateEmail(User user) {
-        if (user.getEmail().isEmpty() || user.getEmail() == null){
+
+        if (user.getEmail() == null){
             throw new IncorrectParameterException("Invalid email");
         }
         if (users.values()
                 .stream()
                 .anyMatch(
                         stored -> stored.getEmail().equalsIgnoreCase(user.getEmail())
-                                && stored.getId() != user.getId()
+                                && !Objects.equals(stored.getId(), user.getId())
                 )
         ) {
             throw new DuplicatedEmailException("User with email " +

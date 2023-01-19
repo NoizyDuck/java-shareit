@@ -3,6 +3,8 @@ package ru.practicum.shareit.item;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.exceptions.DuplicatedEmailException;
+import ru.practicum.shareit.exceptions.IncorrectParameterException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
@@ -59,4 +61,6 @@ public class ItemServiceImpl implements ItemService {
     public void deleteItem(Integer itemId) {
         itemRepository.deleteItem(itemId);
     }
+
+
 }

@@ -3,7 +3,7 @@ package ru.practicum.shareit.user;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exceptions.IncorrectParameterException;
+import ru.practicum.shareit.exceptions.DuplicatedEmailException;
 import ru.practicum.shareit.user.userDto.UserDto;
 import ru.practicum.shareit.user.userDto.UserMapper;
 
@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+
     public List<UserDto> getUsers() {
         log.debug("Выдача всех пользователей");
 
@@ -33,15 +34,29 @@ public class UserServiceImpl implements UserService {
     }
 
     public UserDto updateUser(Integer userId, UserDto userDto) {
-        User user = userMapper.DtoToUser(userDto);
-//        user.setId(userId);
+//        User user = userMapper.DtoToUser(userDto);
+        User user = userRepository.get(userId);
+        if (userDto.getEmail() != null) {
+            EmailDuplicateCheck(userDto.getEmail());
+            user.setEmail(userDto.getEmail());
+        }
+        if (userDto.getName() != null) {
+            user.setName(userDto.getName());
+        }
+
         log.debug(String.format("Обновление пользователя c id = %d", userId));
-        return  userMapper.userToDto(userRepository.update(userId, user));
+        return userMapper.userToDto(userRepository.update(userId, user));
     }
 
     public UserDto addUser(UserDto userDto) {
         User user = userMapper.DtoToUser(userDto);
         log.debug("Добавление пользователя");
         return userMapper.userToDto(userRepository.add(user));
+    }
+
+    private void EmailDuplicateCheck(String email) {
+        userRepository.getByEmail(email).ifPresent(user -> {
+            throw new DuplicatedEmailException(email);
+        });
     }
 }
