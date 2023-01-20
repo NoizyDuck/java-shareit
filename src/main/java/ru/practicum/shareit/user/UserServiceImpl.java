@@ -36,7 +36,7 @@ public class UserServiceImpl implements UserService {
     public UserDto updateUser(Integer userId, UserDto userDto) {
         User user = userRepository.get(userId);
         if (userDto.getEmail() != null) {
-            EmailDuplicateCheck(userDto.getEmail());
+            emailDuplicateCheck(userDto.getEmail());
             user.setEmail(userDto.getEmail());
         }
         if (userDto.getName() != null) {
@@ -53,7 +53,7 @@ public class UserServiceImpl implements UserService {
         return userMapper.userToDto(userRepository.add(user));
     }
 
-    private void EmailDuplicateCheck(String email) {
+    private void emailDuplicateCheck(String email) {
         userRepository.getByEmail(email).ifPresent(user -> {
             throw new DuplicatedEmailException(email);
         });
