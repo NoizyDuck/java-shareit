@@ -18,18 +18,18 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
 
     public List<UserDto> getUsers() {
-        log.debug("Выдача всех пользователей");
+        log.debug("Users extradition");
 
         return userRepository.getAll().stream().map(userMapper::userToDto).collect(Collectors.toList());
     }
 
     public UserDto getUser(Integer id) {
-        log.debug(String.format("Выдача пользователя c id = %d", id));
+        log.debug(String.format("Extradition user with id = %d", id));
         return userMapper.userToDto(userRepository.get(id));
     }
 
     public void removeUser(Integer id) {
-        log.debug(String.format("Удаление пользователя c id = %d", id));
+        log.debug(String.format("Deleting user with id = %d", id));
         userRepository.remove(id);
     }
 
@@ -43,13 +43,13 @@ public class UserServiceImpl implements UserService {
             user.setName(userDto.getName());
         }
 
-        log.debug(String.format("Обновление пользователя c id = %d", userId));
+        log.debug(String.format("Updating user with id = %d", userId));
         return userMapper.userToDto(userRepository.update(userId, user));
     }
 
     public UserDto addUser(UserDto userDto) {
         User user = userMapper.DtoToUser(userDto);
-        log.debug("Добавление пользователя");
+        log.debug("Adding user");
         return userMapper.userToDto(userRepository.add(user));
     }
 
