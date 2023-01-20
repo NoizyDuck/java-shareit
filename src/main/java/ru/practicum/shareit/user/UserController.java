@@ -13,10 +13,11 @@ import java.util.List;
 @RestController
 @RequestMapping(path = "/users")
 public class UserController {
-private final UserService userService;
+    private final UserService userService;
+
     @GetMapping
-    public List<UserDto> getAllUser(){
-    List<UserDto> userList = userService.getUsers();
+    public List<UserDto> getAllUser() {
+        List<UserDto> userList = userService.getUsers();
         log.debug("List of all users");
         return userList;
     }
@@ -36,7 +37,7 @@ private final UserService userService;
 
     @PatchMapping("/{userId}")
     public UserDto updateUser(@RequestBody @Valid UserDto userDto, @PathVariable Integer userId) {
-        UserDto saveUserDto = userService.updateUser(userId,userDto);
+        UserDto saveUserDto = userService.updateUser(userId, userDto);
         log.debug(String.format("User with id = %d updated", userId));
         return saveUserDto;
     }

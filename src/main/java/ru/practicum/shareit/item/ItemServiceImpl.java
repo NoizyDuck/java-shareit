@@ -36,8 +36,8 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto addItem(Integer userId, ItemDto itemDto) {
         Item item = itemMapper.DtoToItem(itemDto);
-       User user = userRepository.get(userId);
-       item.setOwner(user);
+        User user = userRepository.get(userId);
+        item.setOwner(user);
         return itemMapper.itemToDto(itemRepository.addItem(item));
     }
 
@@ -52,7 +52,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDto> searchItem(String text) {
-        if(text.isEmpty()){
+        if (text.isEmpty()) {
             return new ArrayList<>();
         }
         return itemRepository.searchItem(text).stream().map(itemMapper::itemToDto).collect(Collectors.toList());
@@ -63,7 +63,7 @@ public class ItemServiceImpl implements ItemService {
         itemRepository.deleteItem(itemId);
     }
 
-    private Item validateBeforeUpdate(User user, Item item, ItemDto itemDto){
+    private Item validateBeforeUpdate(User user, Item item, ItemDto itemDto) {
         if (!user.equals(item.getOwner())) {
             throw new NotFoundException("wrong owner");
         }
@@ -73,11 +73,11 @@ public class ItemServiceImpl implements ItemService {
         if (itemDto.getDescription() != null) {
             item.setDescription(itemDto.getDescription());
         }
-        if (itemDto.getAvailable()!= null){
-           item.setAvailable(itemDto.getAvailable());
+        if (itemDto.getAvailable() != null) {
+            item.setAvailable(itemDto.getAvailable());
         }
 
         return item;
-        }
+    }
 
 }

@@ -64,7 +64,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     private void validateEmail(User user) {
 
-        if (user.getEmail() == null){
+        if (user.getEmail() == null) {
             throw new IncorrectParameterException("Invalid email");
         }
         if (users.values()

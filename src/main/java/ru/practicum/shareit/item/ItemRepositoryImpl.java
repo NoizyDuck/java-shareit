@@ -22,6 +22,7 @@ public class ItemRepositoryImpl implements ItemRepository {
         }
         return items.get(itemId);
     }
+
     @Override
     public List<Item> getAllItemsByUserId(Integer userId) {
         return items.values()
@@ -40,7 +41,7 @@ public class ItemRepositoryImpl implements ItemRepository {
 
     @Override
     public Item updateItem(Integer userId, Integer itemId, Item item) {
-            items.put(itemId, item);
+        items.put(itemId, item);
         return item;
     }
 
@@ -48,9 +49,9 @@ public class ItemRepositoryImpl implements ItemRepository {
     public List<Item> searchItem(String text) {
         List<Item> itemsList = new ArrayList<>();
         for (Item item : items.values()) {
-            if(item.isAvailable() &&
+            if (item.isAvailable() &&
                     item.getDescription().toLowerCase().contains(text.toLowerCase()) ||
-                    item.getName().toLowerCase().contains(text.toLowerCase())){
+                    item.getName().toLowerCase().contains(text.toLowerCase())) {
                 itemsList.add(item);
             }
         }
@@ -59,14 +60,13 @@ public class ItemRepositoryImpl implements ItemRepository {
 
     @Override
     public void deleteItem(Integer itemId) {
-      items.values().removeIf(item -> item.getId().equals(itemId));
+        items.values().removeIf(item -> item.getId().equals(itemId));
     }
 
 
     private Integer getId() {
         return ++id;
     }
-
 
 
 }
