@@ -48,7 +48,7 @@ public class UserServiceImpl implements UserService {
     }
 
     public UserDto addUser(UserDto userDto) {
-        User user = userMapper.DtoToUser(userDto);
+        User user = userMapper.dtoToUser(userDto);
         log.debug("Adding user");
         return userMapper.userToDto(userRepository.add(user));
     }
