@@ -4,8 +4,7 @@ import lombok.Data;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
 
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.LocalDate;
 
 /**
@@ -16,11 +15,17 @@ import java.time.LocalDate;
 
 public class Booking {
     @Id
-    private int id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @Column(name = "start_booking")
     private LocalDate start;
+    @Column(name = "end_booking")
     private LocalDate end;
+    @Column(name = "item_id")
     private Item item;
+    @Column(name = "booker_id")
     private User booker;
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private BookingStatus status;
 
 }

@@ -10,7 +10,7 @@ import javax.validation.constraints.Email;
 @Setter
 @AllArgsConstructor
 public class UserDto {
-    private Integer id;
+    private Long id;
     private String name;
     @Email
     private String email;
