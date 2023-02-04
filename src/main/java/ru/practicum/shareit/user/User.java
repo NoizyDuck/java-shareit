@@ -16,6 +16,7 @@ import java.util.Objects;
 @Table(name = "users")
 public class User {
     @Id
+    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(name = "user_name", nullable = false, length = 100, unique = true)

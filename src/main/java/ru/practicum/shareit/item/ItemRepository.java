@@ -13,6 +13,8 @@ public interface ItemRepository extends JpaRepository<Item,Long> {
             "upper(i.description) like upper(concat('%', ?1, '%'))) and i.available is true ")
     List<Item> findAllByText(String text);
 
+    Item findItemsByOwnerId(long ownerId);
+
 //    Item getItem(Integer itemId);
 //
 //    List<Item> getAllItemsByUserId(Integer userId);

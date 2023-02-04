@@ -16,69 +16,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Slf4j
-@Service
-@RequiredArgsConstructor
-public class ItemService {
-    private final ItemMapper itemMapper;
 
-    private final ItemRepository itemRepository;
-    private final UserRepository userRepository;
-    private final UserService userService;
-    private final UserMapper userMapper;
+public interface ItemService {
 
-    public ItemDto getItem(long id) {
-        return itemMapper.itemToDto(itemRepository.findById(id).orElseThrow(() ->
-                new NotFoundException("Item id " + id + " not found")));
-    }
+    public ItemDto getItem(long id);
 
-    public List<ItemDto> getAllItems(long userId) {
-        return itemRepository.findByOwner(userId).stream().map(itemMapper::itemToDto).collect(Collectors.toList());
-    }
+    public List<ItemDto> getAllItems(long userId);
 
-    public ItemDto addItem(long id, ItemDto itemDto) {
-        Item item = itemMapper.dtoToItem(itemDto);
-        User user = userMapper.dtoToUser(userService.getUser(id));
-        item.setOwner(user);
-        return itemMapper.itemToDto(itemRepository.save(item));
-    }
+    public ItemDto addItem(long id, ItemDto itemDto);
 
-    public ItemDto updateItem(long userId, long itemId, ItemDto itemDto) {
-        Item item = itemRepository.findById(itemId).orElseThrow(() ->
-                new NotFoundException("Item id " + itemId + " not found"));
-        User user = userMapper.dtoToUser(userService.getUser(userId));
-        item.setOwner(user);
-        Item newItem = validateBeforeUpdate(user, item, itemDto);
+    public ItemDto updateItem(long userId, long itemId, ItemDto itemDto);
 
-        return itemMapper.itemToDto(itemRepository.save(newItem));
-    }
+    public List<ItemDto> searchItem(String text);
 
-    public List<ItemDto> searchItem(String text) {
-        if (text.isEmpty()) {
-            return new ArrayList<>();
-        }
-        return itemRepository.findAllByText(text).stream().map(itemMapper::itemToDto).collect(Collectors.toList());
-    }
+    public void deleteItem(long itemId);
 
-    public void deleteItem(long itemId) {
-        itemRepository.deleteById(itemId);
-    }
-
-    private Item validateBeforeUpdate(User user, Item item, ItemDto itemDto) {
-        if (!user.equals(item.getOwner())) {
-            throw new NotFoundException("wrong owner");
-        }
-        if (itemDto.getName() != null) {
-            item.setName(itemDto.getName());
-        }
-        if (itemDto.getDescription() != null) {
-            item.setDescription(itemDto.getDescription());
-        }
-        if (itemDto.getAvailable() != null) {
-            item.setAvailable(itemDto.getAvailable());
-        }
-
-        return item;
-    }
 
 }
