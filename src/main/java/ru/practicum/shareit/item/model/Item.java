@@ -12,6 +12,7 @@ import javax.persistence.*;
 @Table(name = "items")
     public class Item {
     @Id
+    @Column(name = "item_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(name = "item_name")
@@ -23,9 +24,6 @@ import javax.persistence.*;
     @ManyToOne
     @JoinColumn(name = "owner_id")
     private User owner;
-//    private  ItemRequest request;
-//    @Column(name = "user_id")
-//    private Integer owner;
     @Column (name = "request_id")
     private Integer request;
 

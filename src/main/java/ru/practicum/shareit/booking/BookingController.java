@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.dto.BookingDtoLong;
 
 import java.util.List;
 
@@ -19,11 +20,12 @@ public class BookingController {
     private final BookingService bookingService;
 
    @PostMapping
-    public BookingDto createBooking (@RequestHeader("X-Sharer-User-Id") Long userId,
+    public BookingDtoLong createBooking (@RequestHeader("X-Sharer-User-Id") Long userId,
                                   @RequestBody BookingDto bookingDto){
        log.debug("New booking created by user id #" + userId);
         return bookingService.create(userId, bookingDto);
    }
+
 
 //   @PatchMapping("/{itemId}")
 //    public BookingDto updateBooking (@RequestHeader("X-Sharer-User-Id") Long userId,
@@ -41,12 +43,18 @@ public class BookingController {
        return bookingService.updateBookingApprove(ownerId,bookingId,approved);
    }
 
-   @GetMapping("/{bookingId}")
-    public BookingDto getBooking(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                 @PathVariable Long bookingId){
-       log.debug("Get request booking for user id " + userId);
-       return bookingService.getBooking(userId, bookingId);
-   }
+//   @GetMapping("/{bookingId}")
+//    public BookingDto getBooking(@RequestHeader("X-Sharer-User-Id") Long userId,
+//                                 @PathVariable Long bookingId){
+//       log.debug("Get request booking for user id " + userId);
+//       return bookingService.getBooking(userId, bookingId);
+//   }
+    @GetMapping("/{bookingId}")
+    public BookingDtoLong getBooking(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                     @PathVariable Long bookingId){
+        log.debug("Get request booking for user id " + userId);
+        return bookingService.getBooking(userId, bookingId);
+    }
 
    @GetMapping
     public List<BookingDto> getAllBookingByUser(@RequestHeader ("X-Sharer-User-Id") Long userId,

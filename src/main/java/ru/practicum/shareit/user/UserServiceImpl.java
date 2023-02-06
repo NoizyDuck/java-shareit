@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exceptions.DuplicatedEmailException;
 import ru.practicum.shareit.exceptions.NotFoundException;
+import ru.practicum.shareit.user.userDto.UserCreateDto;
 import ru.practicum.shareit.user.userDto.UserDto;
 import ru.practicum.shareit.user.userDto.UserMapper;
 
@@ -52,8 +53,8 @@ public class UserServiceImpl implements UserService{
         return userMapper.userToDto(userRepository.save(user));
     }
 
-    public UserDto addUser(UserDto userDto) {
-        User user = userMapper.dtoToUser(userDto);
+    public UserDto addUser(UserCreateDto userDto) {
+        User user = userMapper.createDtoToUser(userDto);
         log.debug("Adding user");
         return userMapper.userToDto(userRepository.save(user));
     }

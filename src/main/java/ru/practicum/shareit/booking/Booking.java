@@ -1,11 +1,11 @@
 package ru.practicum.shareit.booking;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
 
 import javax.persistence.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 public class Booking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "booking_id")
     private Long id;
     @Column(name = "start_booking")
     private LocalDateTime start;

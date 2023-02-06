@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class ExceptionsHandler {
 
-    @ExceptionHandler(IncorrectParameterException.class)
+    @ExceptionHandler({IncorrectParameterException.class, InvalidStatusException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleValidateUser(final RuntimeException exp) {
         return new ErrorResponse(exp.getMessage());

@@ -12,6 +12,8 @@ public interface UserMapper {
 
     UserDto userToDto(User user);
 
-//    UserDto userToDto(Optional<User> byId);
+    User createDtoToUser (UserCreateDto createDto);
+    UserCreateDto userToCreateDto(User user);
+
 }
 

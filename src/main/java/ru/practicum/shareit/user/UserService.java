@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exceptions.DuplicatedEmailException;
 import ru.practicum.shareit.exceptions.NotFoundException;
+import ru.practicum.shareit.user.userDto.UserCreateDto;
 import ru.practicum.shareit.user.userDto.UserDto;
 import ru.practicum.shareit.user.userDto.UserMapper;
 
@@ -22,7 +23,7 @@ public interface UserService {
 
     public UserDto updateUser(long id, UserDto userDto);
 
-    public UserDto addUser(UserDto userDto);
+    public UserDto addUser(UserCreateDto userDto);
 
 //    private void emailDuplicateCheck(String email);
 }

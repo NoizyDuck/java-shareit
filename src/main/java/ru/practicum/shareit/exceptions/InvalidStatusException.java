@@ -6,6 +6,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ResponseStatus(HttpStatus.BAD_REQUEST)
 public class InvalidStatusException extends RuntimeException {
     public InvalidStatusException() {
-        super("Invalid status of booking");
+        super("Unknown state: UNSUPPORTED_STATUS");
     }
 }
