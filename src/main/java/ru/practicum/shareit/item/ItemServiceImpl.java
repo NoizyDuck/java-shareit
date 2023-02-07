@@ -48,8 +48,8 @@ public class ItemServiceImpl implements ItemService {
     }
 
     public List<ItemDto> getAllItems(long userId) {
-        return itemRepository.findAllByOwner_IdOrderById(userId).stream().map(itemMapper::itemToDto).
-                collect(Collectors.toList())
+        return itemRepository.findAllByOwner_IdOrderById(userId).stream().map(itemMapper::itemToDto)
+                .collect(Collectors.toList())
                 .stream()
                 .map(item -> {
                     long id = item.getId();
