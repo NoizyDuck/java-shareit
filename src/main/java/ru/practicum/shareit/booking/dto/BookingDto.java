@@ -1,6 +1,9 @@
 package ru.practicum.shareit.booking.dto;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
@@ -12,9 +15,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class BookingDto {
     @NotNull
-  private   Long itemId;
+    private Long itemId;
     @NotNull
-   private LocalDateTime start;
+    private LocalDateTime start;
     @NotNull
-   private LocalDateTime end;
+    private LocalDateTime end;
 }

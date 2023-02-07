@@ -8,7 +8,6 @@ import java.util.List;
 public interface BookingService {
     ReturnBookingDto create(Long userId, BookingDto bookingDto);
 
-    BookingDto updateAvailable(Long userId, Long itemId, BookingDto bookingDto);
 
     ReturnBookingDto getBooking(Long userId, Long bookingId);
 

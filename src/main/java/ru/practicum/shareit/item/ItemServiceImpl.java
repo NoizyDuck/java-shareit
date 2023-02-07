@@ -5,22 +5,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingRepository;
-import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.exceptions.IncorrectParameterException;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
-import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.userDto.UserMapper;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.spi.LocaleServiceProvider;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -43,22 +39,22 @@ public class ItemServiceImpl implements ItemService {
         ItemDto itemDto = itemMapper.itemToDto(item);
         if (item.getOwner().getId() == userId) {
             itemDto.setLastBooking(bookingMapper.bookingToShortBookingDto(
-                bookingRepository.findByItem_IdAndEndBeforeOrderByStartDesc(id, LocalDateTime.now())));
-        itemDto.setNextBooking(bookingMapper.bookingToShortBookingDto(
-                bookingRepository.findByItem_IdAndStartAfterOrderByStartDesc(id, LocalDateTime.now())));
+                    bookingRepository.findByItem_IdAndEndBeforeOrderByStartDesc(id, LocalDateTime.now())));
+            itemDto.setNextBooking(bookingMapper.bookingToShortBookingDto(
+                    bookingRepository.findByItem_IdAndStartAfterOrderByStartDesc(id, LocalDateTime.now())));
         }
         itemDto.setComments(commentRepository.findAllByItem_Id(id).stream().map(commentMapper::returnDtoToComment).collect(Collectors.toList()));
         return itemDto;
     }
 
     public List<ItemDto> getAllItems(long userId) {
-        List<ItemDto> items = itemRepository.findAllByOwner_IdOrderById(userId).stream().map(itemMapper::itemToDto).
+        return itemRepository.findAllByOwner_IdOrderById(userId).stream().map(itemMapper::itemToDto).
                 collect(Collectors.toList())
                 .stream()
-                .map(item -> { long id = item.getId();
+                .map(item -> {
+                    long id = item.getId();
                     return getItemDto(id, item);
                 }).collect(Collectors.toList());
-        return items;
     }
 
     public ItemDto addItem(long id, ItemDto itemDto) {
@@ -124,6 +120,7 @@ public class ItemServiceImpl implements ItemService {
 
         return item;
     }
+
     private ItemDto getItemDto(long id, ItemDto itemDto) {
         itemDto.setComments(commentRepository.findAllByItem_Id(id).stream().map(commentMapper::returnDtoToComment).collect(Collectors.toList()));
         itemDto.setLastBooking(bookingMapper.bookingToShortBookingDto(
