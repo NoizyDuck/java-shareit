@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ReturnCommentDto;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -17,9 +18,10 @@ public class ItemController {
     private final ItemService itemService;
 
     @GetMapping("/{itemId}")
-    public ItemDto getItem(@PathVariable Long itemId) {
+    public ItemDto getItem(@RequestHeader("X-Sharer-User-Id") Long userId,
+                           @PathVariable Long itemId) {
         log.debug(String.format("Item with id /%d", itemId));
-        return itemService.getItem(itemId);
+        return itemService.getItem(itemId, userId);
     }
 
     @GetMapping
@@ -56,9 +58,9 @@ public class ItemController {
     }
 
     @PostMapping("/{itemId}/comment")
-    public CommentDto createComment(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                    @PathVariable long itemId,
-                                    @RequestBody @Valid CommentDto comment){
+    public ReturnCommentDto createComment(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                          @PathVariable long itemId,
+                                          @RequestBody @Valid CommentDto comment){
         log.debug("Comment creation");
         return itemService.createComment(userId, itemId, comment);
     }

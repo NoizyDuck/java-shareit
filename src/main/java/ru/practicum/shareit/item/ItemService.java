@@ -7,6 +7,7 @@ import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
+import ru.practicum.shareit.item.dto.ReturnCommentDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
@@ -20,7 +21,7 @@ import java.util.stream.Collectors;
 
 public interface ItemService {
 
-    public ItemDto getItem(long id);
+    public ItemDto getItem(long id, long userId);
 
     public List<ItemDto> getAllItems(long userId);
 
@@ -33,5 +34,5 @@ public interface ItemService {
     public void deleteItem(long itemId);
 
 
-    CommentDto createComment(Long userId, long itemId, CommentDto comment);
+    ReturnCommentDto createComment(Long userId, long itemId, CommentDto comment);
 }

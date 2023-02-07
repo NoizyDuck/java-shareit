@@ -3,11 +3,13 @@ package ru.practicum.shareit.item;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.booking.Booking;
+import ru.practicum.shareit.booking.BookingRepository;
+import ru.practicum.shareit.booking.BookingStatus;
+import ru.practicum.shareit.booking.dto.BookingMapper;
+import ru.practicum.shareit.exceptions.IncorrectParameterException;
 import ru.practicum.shareit.exceptions.NotFoundException;
-import ru.practicum.shareit.item.dto.CommentDto;
-import ru.practicum.shareit.item.dto.CommentMapper;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.ItemMapper;
+import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
@@ -25,22 +27,38 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 
-public class ItemServiceImpl implements ItemService{
+public class ItemServiceImpl implements ItemService {
     private final ItemMapper itemMapper;
     private final CommentRepository commentRepository;
     private final CommentMapper commentMapper;
     private final ItemRepository itemRepository;
     private final UserService userService;
     private final UserMapper userMapper;
+    private final BookingMapper bookingMapper;
+    private final BookingRepository bookingRepository;
 
-    public ItemDto getItem(long id) {
-        return itemMapper.itemToDto(itemRepository.findById(id).orElseThrow(() ->
-                new NotFoundException("Item id " + id + " not found")));
+    public ItemDto getItem(long id, long userId) {
+        Item item = itemRepository.findById(id).orElseThrow(() ->
+                new NotFoundException("Item id " + id + " not found"));
+        ItemDto itemDto = itemMapper.itemToDto(item);
+        if (item.getOwner().getId() == userId) {
+            itemDto.setLastBooking(bookingMapper.bookingToShortBookingDto(
+                bookingRepository.findByItem_IdAndEndBeforeOrderByStartDesc(id, LocalDateTime.now())));
+        itemDto.setNextBooking(bookingMapper.bookingToShortBookingDto(
+                bookingRepository.findByItem_IdAndStartAfterOrderByStartDesc(id, LocalDateTime.now())));
+        }
+        itemDto.setComments(commentRepository.findAllByItem_Id(id).stream().map(commentMapper::returnDtoToComment).collect(Collectors.toList()));
+        return itemDto;
     }
 
     public List<ItemDto> getAllItems(long userId) {
-        List<Item> items = itemRepository.findAllByOwner_IdOrderById(userId);
-        return items.stream().map(itemMapper::itemToDto).collect(Collectors.toList());
+        List<ItemDto> items = itemRepository.findAllByOwner_IdOrderById(userId).stream().map(itemMapper::itemToDto).
+                collect(Collectors.toList())
+                .stream()
+                .map(item -> { long id = item.getId();
+                    return getItemDto(id, item);
+                }).collect(Collectors.toList());
+        return items;
     }
 
     public ItemDto addItem(long id, ItemDto itemDto) {
@@ -54,7 +72,7 @@ public class ItemServiceImpl implements ItemService{
         Item item = itemRepository.findById(itemId).orElseThrow(() ->
                 new NotFoundException("Item id " + itemId + " not found"));
         User user = userMapper.dtoToUser(userService.getUser(userId));
-        if(!item.getOwner().getId().equals(userId)){
+        if (!item.getOwner().getId().equals(userId)) {
             throw new NotFoundException("owner not found");
         }
         item.setOwner(user);
@@ -75,14 +93,18 @@ public class ItemServiceImpl implements ItemService{
     }
 
     @Override
-    public CommentDto createComment(Long userId, long itemId, CommentDto commentDto) {
+    public ReturnCommentDto createComment(Long userId, long itemId, CommentDto commentDto) {
         Comment comment = commentMapper.dtoToComment(commentDto);
         User author = userMapper.dtoToUser(userService.getUser(userId));
-        Item item = itemMapper.dtoToItem(getItem(itemId));
+        Item item = itemMapper.dtoToItem(getItem(itemId, userId));
+        List<Booking> bookings = bookingRepository.findAllByBooker_IdAndEndBeforeOrderByStartDesc(userId, LocalDateTime.now());
+        if (bookings.isEmpty()) {
+            throw new IncorrectParameterException("Can't leve comment without booking");
+        }
         comment.setItem(item);
         comment.setAuthor(author);
         comment.setCreatedTime(LocalDateTime.now());
-        return commentMapper.commentToDto(commentRepository.save(comment));
+        return commentMapper.returnDtoToComment(commentRepository.save(comment));
     }
 
 
@@ -102,7 +124,14 @@ public class ItemServiceImpl implements ItemService{
 
         return item;
     }
-
+    private ItemDto getItemDto(long id, ItemDto itemDto) {
+        itemDto.setComments(commentRepository.findAllByItem_Id(id).stream().map(commentMapper::returnDtoToComment).collect(Collectors.toList()));
+        itemDto.setLastBooking(bookingMapper.bookingToShortBookingDto(
+                bookingRepository.findByItem_IdAndEndBeforeOrderByStartDesc(id, LocalDateTime.now())));
+        itemDto.setNextBooking(bookingMapper.bookingToShortBookingDto(
+                bookingRepository.findByItem_IdAndStartAfterOrderByStartDesc(id, LocalDateTime.now())));
+        return itemDto;
+    }
 }
 
 
