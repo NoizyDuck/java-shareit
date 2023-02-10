@@ -61,7 +61,7 @@ public class UserServiceImpl implements UserService {
 
     private void emailDuplicateCheck(String email) {
         userRepository.getByEmail(email).ifPresent(user -> {
-            throw new DuplicatedEmailException(email);
+            throw new DuplicatedEmailException("user with email " + email + " already exist");
         });
     }
 }

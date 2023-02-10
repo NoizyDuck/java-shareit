@@ -27,7 +27,7 @@ public class ItemController {
     @GetMapping
     public List<ItemDto> getItems(@RequestHeader("X-Sharer-User-Id") Long userId) {
         log.debug(String.format("Items of user with id /%d ", userId));
-        return itemService.getAllItems(userId);
+        return itemService.getAllItemsByOwnerId(userId);
     }
 
     @PostMapping

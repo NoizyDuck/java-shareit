@@ -47,7 +47,7 @@ public class ItemServiceImpl implements ItemService {
         return itemDto;
     }
 
-    public List<ItemDto> getAllItems(long userId) {
+    public List<ItemDto> getAllItemsByOwnerId(long userId) {
         return itemRepository.findAllByOwner_IdOrderById(userId).stream().map(itemMapper::itemToDto)
                 .collect(Collectors.toList())
                 .stream()

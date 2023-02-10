@@ -11,7 +11,7 @@ public interface ItemService {
 
     ItemDto getItem(long id, long userId);
 
-    List<ItemDto> getAllItems(long userId);
+    List<ItemDto> getAllItemsByOwnerId(long userId);
 
     ItemDto addItem(long id, ItemDto itemDto);
 
@@ -20,7 +20,6 @@ public interface ItemService {
     List<ItemDto> searchItem(String text);
 
     void deleteItem(long itemId);
-
 
     ReturnCommentDto createComment(Long userId, long itemId, CommentDto comment);
 }
