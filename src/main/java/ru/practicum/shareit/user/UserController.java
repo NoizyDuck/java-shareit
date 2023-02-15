@@ -3,6 +3,7 @@ package ru.practicum.shareit.user;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.user.userDto.UserCreateDto;
 import ru.practicum.shareit.user.userDto.UserDto;
 
 import javax.validation.Valid;
@@ -23,27 +24,27 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public UserDto getUser(@PathVariable Integer id) {
+    public UserDto getUser(@PathVariable Long id) {
         UserDto userDto = userService.getUser(id);
         log.debug(String.format("User with id = %d", id));
         return userDto;
     }
 
     @DeleteMapping("/{id}")
-    public void removeUser(@PathVariable Integer id) {
+    public void removeUser(@PathVariable Long id) {
         userService.removeUser(id);
         log.debug(String.format("User with id = %d deleted", id));
     }
 
     @PatchMapping("/{userId}")
-    public UserDto updateUser(@RequestBody @Valid UserDto userDto, @PathVariable Integer userId) {
+    public UserDto updateUser(@RequestBody @Valid UserDto userDto, @PathVariable Long userId) {
         UserDto saveUserDto = userService.updateUser(userId, userDto);
         log.debug(String.format("User with id = %d updated", userId));
         return saveUserDto;
     }
 
     @PostMapping
-    public UserDto addUser(@RequestBody @Valid UserDto userDto) {
+    public UserDto addUser(@RequestBody @Valid UserCreateDto userDto) {
         UserDto saveUserDto = userService.addUser(userDto);
         log.debug(String.format("User with id = %d added", saveUserDto.getId()));
         return saveUserDto;

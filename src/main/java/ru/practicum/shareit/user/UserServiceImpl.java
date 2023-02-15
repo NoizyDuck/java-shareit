@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exceptions.DuplicatedEmailException;
+import ru.practicum.shareit.exceptions.NotFoundException;
+import ru.practicum.shareit.user.userDto.UserCreateDto;
 import ru.practicum.shareit.user.userDto.UserDto;
 import ru.practicum.shareit.user.userDto.UserMapper;
 
@@ -20,21 +22,25 @@ public class UserServiceImpl implements UserService {
     public List<UserDto> getUsers() {
         log.debug("Users extradition");
 
-        return userRepository.getAll().stream().map(userMapper::userToDto).collect(Collectors.toList());
+        return userRepository.findAll().stream().map(userMapper::userToDto).collect(Collectors.toList());
     }
 
-    public UserDto getUser(Integer id) {
+    public UserDto getUser(long id) {
         log.debug(String.format("Extradition user with id = %d", id));
-        return userMapper.userToDto(userRepository.get(id));
+        return userMapper.userToDto(userRepository.findById(id).orElseThrow(() ->
+                new NotFoundException("user id " + id + " not found")));
     }
 
-    public void removeUser(Integer id) {
+    public void removeUser(long id) {
         log.debug(String.format("Deleting user with id = %d", id));
-        userRepository.remove(id);
+        User user = userRepository.findById(id).orElseThrow(() ->
+                new NotFoundException("user id " + id + " not found"));
+        userRepository.delete(user);
     }
 
-    public UserDto updateUser(Integer userId, UserDto userDto) {
-        User user = userRepository.get(userId);
+    public UserDto updateUser(long id, UserDto userDto) {
+        User user = userRepository.findById(id).orElseThrow(() ->
+                new NotFoundException("user id " + id + " not found"));
         if (userDto.getEmail() != null) {
             emailDuplicateCheck(userDto.getEmail());
             user.setEmail(userDto.getEmail());
@@ -43,19 +49,21 @@ public class UserServiceImpl implements UserService {
             user.setName(userDto.getName());
         }
 
-        log.debug(String.format("Updating user with id = %d", userId));
-        return userMapper.userToDto(userRepository.update(userId, user));
+        log.debug(String.format("Updating user with id = %d", id));
+        return userMapper.userToDto(userRepository.save(user));
     }
 
-    public UserDto addUser(UserDto userDto) {
-        User user = userMapper.dtoToUser(userDto);
+    public UserDto addUser(UserCreateDto userDto) {
+        User user = userMapper.createDtoToUser(userDto);
         log.debug("Adding user");
-        return userMapper.userToDto(userRepository.add(user));
+        return userMapper.userToDto(userRepository.save(user));
     }
 
     private void emailDuplicateCheck(String email) {
         userRepository.getByEmail(email).ifPresent(user -> {
-            throw new DuplicatedEmailException(email);
+            throw new DuplicatedEmailException("user with email " + email + " already exist");
         });
     }
 }
+
+

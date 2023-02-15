@@ -3,7 +3,9 @@ package ru.practicum.shareit.item;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ReturnCommentDto;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -16,27 +18,28 @@ public class ItemController {
     private final ItemService itemService;
 
     @GetMapping("/{itemId}")
-    public ItemDto getItem(@PathVariable Integer itemId) {
+    public ItemDto getItem(@RequestHeader("X-Sharer-User-Id") Long userId,
+                           @PathVariable Long itemId) {
         log.debug(String.format("Item with id /%d", itemId));
-        return itemService.getItem(itemId);
+        return itemService.getItem(itemId, userId);
     }
 
     @GetMapping
-    public List<ItemDto> getItems(@RequestHeader("X-Sharer-User-Id") Integer userId) {
+    public List<ItemDto> getItems(@RequestHeader("X-Sharer-User-Id") Long userId) {
         log.debug(String.format("Items of user with id /%d ", userId));
-        return itemService.getAllItems(userId);
+        return itemService.getAllItemsByOwnerId(userId);
     }
 
     @PostMapping
-    public ItemDto createItem(@RequestHeader("X-Sharer-User-Id") Integer userId,
+    public ItemDto createItem(@RequestHeader("X-Sharer-User-Id") Long userId,
                               @RequestBody @Valid ItemDto itemDto) {
         log.debug("Item created");
         return itemService.addItem(userId, itemDto);
     }
 
     @PatchMapping("/{itemId}")
-    public ItemDto updateItem(@RequestHeader("X-Sharer-User-Id") Integer userId,
-                              @PathVariable Integer itemId,
+    public ItemDto updateItem(@RequestHeader("X-Sharer-User-Id") Long userId,
+                              @PathVariable Long itemId,
                               @RequestBody ItemDto itemDto) {
         log.debug("Item updated");
         return itemService.updateItem(userId, itemId, itemDto);
@@ -49,9 +52,17 @@ public class ItemController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteItem(@PathVariable Integer id) {
+    public void deleteItem(@PathVariable Long id) {
         itemService.deleteItem(id);
         log.debug(String.format("Item with id /%d was deleted", id));
+    }
+
+    @PostMapping("/{itemId}/comment")
+    public ReturnCommentDto createComment(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                          @PathVariable long itemId,
+                                          @RequestBody @Valid CommentDto comment) {
+        log.debug("Comment creation");
+        return itemService.createComment(userId, itemId, comment);
     }
 
 }
