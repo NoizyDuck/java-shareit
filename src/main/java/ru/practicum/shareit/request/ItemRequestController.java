@@ -1,9 +1,17 @@
 package ru.practicum.shareit.request;
 
+import com.sun.xml.bind.v2.TODO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.h2.mvstore.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.item.ItemRepository;
+import ru.practicum.shareit.request.dto.CreateItemRequestDto;
+import ru.practicum.shareit.request.dto.ItemRequestDto;
+
+import javax.validation.Valid;
+import java.util.List;
 
 /**
  * TODO Sprint add-item-requests.
@@ -13,4 +21,36 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(path = "/requests")
 public class ItemRequestController {
+    private final ItemRequestService itemRequestService;
+
+    @PostMapping
+    ItemRequestDto createRequest (@RequestHeader("X-Sharer-User-Id") Long userId,
+                                  @RequestBody @Valid CreateItemRequestDto createItemRequestDto){
+        log.debug("Creating a new ItemRequest");
+        return itemRequestService.createRequest(userId, createItemRequestDto);
+    }
+
+    @GetMapping
+    List<ItemRequestDto> getItemRequestListById(@RequestHeader("X-Sharer-User-Id") Long userId){ //TODO: Это не работает пока, доделать
+        log.debug("Items requests for user id " + userId);
+        return itemRequestService.getItemRequestsListById(userId);
+    }
+    @GetMapping("/{requestId}")
+    ItemRequestDto getRequestById (@RequestHeader("X-Sharer-User-Id") Long userId,
+                                   @PathVariable long requestId){
+        log.debug("Item request id" + requestId);
+        return itemRequestService.getItemRequestById(requestId, userId);
+    }
+//    @GetMapping("/all")
+//    List<ItemRequestDto> getItemRequestPaginal(@RequestParam(required = false, defaultValue = "0") int from,
+//                                               @RequestParam(required = false, defaultValue = "0") int size){
+//        return itemRequestService.getAllPaginal(PageRequest.of(from,size));
+@GetMapping("/all")
+List<ItemRequestDto> getItemRequestPaginal(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                           @RequestParam(required = false, defaultValue = "0") int from,
+                                           @RequestParam(required = false, defaultValue = "1") int size){
+    return itemRequestService.getAllPaginal(userId, PageRequest.of(from,size));
+    }
+
+
 }

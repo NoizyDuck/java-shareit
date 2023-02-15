@@ -32,7 +32,7 @@ public class Item {
     @JoinColumn(name = "owner_id")
     private User owner;
     @Column(name = "request_id")
-    private Integer request;
+    private Long requestId;
 
     @Override
     public boolean equals(Object o) {
