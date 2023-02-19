@@ -2,7 +2,9 @@ package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.Service.PageRequestMapper;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.dto.BookingMapper;
@@ -47,8 +49,9 @@ public class ItemServiceImpl implements ItemService {
         return itemDto;
     }
 
-    public List<ItemDto> getAllItemsByOwnerId(long userId) {
-        return itemRepository.findAllByOwner_IdOrderById(userId).stream().map(itemMapper::itemToDto)
+    public List<ItemDto> getAllItemsByOwnerId(long userId, Integer from, Integer size) {
+        PageRequest pageRequest = PageRequestMapper.pageRequestValidaCreate(from, size);
+        return itemRepository.findAllByOwner_IdOrderById(userId, pageRequest).stream().map(itemMapper::itemToDto)
                 .collect(Collectors.toList())
                 .stream()
                 .map(item -> {
@@ -77,11 +80,12 @@ public class ItemServiceImpl implements ItemService {
         return itemMapper.itemToDto(itemRepository.save(newItem));
     }
 
-    public List<ItemDto> searchItem(String text) {
+    public List<ItemDto> searchItem(String text, Integer from, Integer size) {
         if (text.isEmpty()) {
             return new ArrayList<>();
         }
-        return itemRepository.findAllByText(text).stream().map(itemMapper::itemToDto).collect(Collectors.toList());
+        PageRequest pageRequest = PageRequestMapper.pageRequestValidaCreate(from, size);
+        return itemRepository.findAllByText(text, pageRequest).stream().map(itemMapper::itemToDto).collect(Collectors.toList());
     }
 
     public void deleteItem(long itemId) {
@@ -129,6 +133,7 @@ public class ItemServiceImpl implements ItemService {
                 bookingRepository.findByItem_IdAndStartAfterOrderByStartDesc(id, LocalDateTime.now())));
         return itemDto;
     }
+
 }
 
 

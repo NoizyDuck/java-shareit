@@ -1,7 +1,9 @@
 package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.Service.PageRequestMapper;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.dto.ReturnBookingDto;
@@ -66,11 +68,12 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<ReturnBookingDto> getAllBookingByUser(Long userId, String state) {
+    public List<ReturnBookingDto> getAllBookingByUser(Long userId, String state, Integer from, Integer size) {
+        PageRequest pageRequest = PageRequestMapper.pageRequestValidaCreate(from, size);
         userService.getUser(userId);
         switch (state) {
             case "ALL":
-                return getReturnDtoList(bookingRepository.findAllByBooker_IdOrderByStartDesc(userId));
+                return getReturnDtoList(bookingRepository.findAllByBooker_IdOrderByStartDesc(userId, pageRequest));
             case "CURRENT":
                 return getReturnDtoList(bookingRepository.findAllByBooker_IdAndStartBeforeAndEndAfterOrderByStartDesc(userId,
                         LocalDateTime.now(), LocalDateTime.now()));
@@ -88,11 +91,12 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<ReturnBookingDto> getAllBookingByOwner(Long ownerId, String state) {
+    public List<ReturnBookingDto> getAllBookingByOwner(Long ownerId, String state, Integer from, Integer size) {
         userService.getUser(ownerId);
+        PageRequest pageRequest = PageRequestMapper.pageRequestValidaCreate(from, size);
         switch (state) {
             case "ALL":
-                return getReturnDtoList(bookingRepository.findAllByItem_Owner_IdOrderByStartDesc(ownerId));
+                return getReturnDtoList(bookingRepository.findAllByItem_Owner_IdOrderByStartDesc(ownerId, pageRequest));
             case "CURRENT":
                 return getReturnDtoList(bookingRepository.findAllByItem_Owner_IdAndStartBeforeAndEndAfterOrderByStartDesc(
                         ownerId, LocalDateTime.now(), LocalDateTime.now()));
