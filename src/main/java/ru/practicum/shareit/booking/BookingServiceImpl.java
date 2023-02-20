@@ -57,7 +57,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public ReturnBookingDto getBooking(Long userId, Long bookingId) {
-        Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> new NotFoundException("booking"));
+        Booking booking = getBooking(bookingId);
         Item item = booking.getItem();
         long bookerId = booking.getBooker().getId();
         long ownerId = item.getOwner().getId();
