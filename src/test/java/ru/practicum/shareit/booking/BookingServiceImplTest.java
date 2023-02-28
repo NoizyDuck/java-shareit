@@ -186,8 +186,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void getAllByBooker_whenInvokedWithStatusCURRENT_CallFindAllByBooker_IdAndStartBeforeAndEndAfterOrderByStartDesc
-            () {
+    void getAllByBooker_whenInvokedWithStatusCURRENT_CallFindAllByBooker_IdAndStartBeforeAndEndAfterOrderByStartDesc() {
         bookingService.getAllBookingByUser(1L, "CURRENT", null, null);
         verify(bookingRepository)
                 .findAllByBooker_IdAndStartBeforeAndEndAfterOrderByStartDesc(anyLong(), any(), any());
@@ -232,8 +231,8 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void getAllByOwner_whenInvokedWithStatusCURRENT_CallFindAllByItem_Owner_IdAndStartBeforeAndEndAfterOrderByStartDesc
-            () {
+    void getAllByOwner_whenInvokedWithStatusCURRENT_CallFindAllByItem_Owner_IdAndStartBeforeAndEndAfterOrderByStartDesc(
+    ) {
         bookingService.getAllBookingByOwner(1L, "CURRENT", null, null);
         verify(bookingRepository)
                 .findAllByItem_Owner_IdAndStartBeforeAndEndAfterOrderByStartDesc(anyLong(), any(), any());

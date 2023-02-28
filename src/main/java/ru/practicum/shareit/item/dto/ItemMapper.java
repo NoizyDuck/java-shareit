@@ -10,6 +10,7 @@ public interface ItemMapper {
     Item dtoToItem(ItemDto itemDto);
 
     ItemDto itemToDto(Item item);
+
     @Mapping(target = "ownerId", source = "owner.id")
     ShortItemDto itemToShortDto(Item item);
 

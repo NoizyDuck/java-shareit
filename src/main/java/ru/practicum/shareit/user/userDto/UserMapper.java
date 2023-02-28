@@ -1,8 +1,6 @@
 package ru.practicum.shareit.user.userDto;
 
 import org.mapstruct.Mapper;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import ru.practicum.shareit.user.User;
 
 

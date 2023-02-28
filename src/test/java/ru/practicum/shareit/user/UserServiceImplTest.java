@@ -36,6 +36,7 @@ class UserServiceImplTest {
     User user = new User(1L, "name", "email");
 
     UserDto userDto = userMapper.userToDto(user);
+
     @Test
     void getUsers_whenGetUsers_returnUsersDtoList() {
         when(userRepository.findAll()).thenReturn(List.of(user));
