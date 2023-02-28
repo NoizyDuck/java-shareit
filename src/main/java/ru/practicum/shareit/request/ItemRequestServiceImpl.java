@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.Service.PageRequestMapper;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.request.dto.CreateItemRequestDto;
@@ -64,8 +65,8 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     }
 
     @Override
-    public List<ItemRequestDto> getAllPaginal(Long userId, PageRequest pageRequest) {
-
+    public List<ItemRequestDto> getAllPaginal(Long userId, Integer from, Integer size) {
+        PageRequest pageRequest = PageRequestMapper.pageRequestValidaCreate(from, size);
         List<ItemRequestDto> itemRequestDtos = itemRequestRepository.findAll(pageRequest).getContent()
                 .stream().map(requestMapper::itemRequestToItemRequestDto).collect(Collectors.toList()).stream()
                 .map(user -> {

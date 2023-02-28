@@ -9,12 +9,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.ReturnBookingDto;
-import ru.practicum.shareit.user.userDto.UserCreateDto;
-import ru.practicum.shareit.user.userDto.UserDto;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -24,7 +22,6 @@ class BookingControllerTest {
     private BookingController bookingController;
     @Mock
     private BookingService bookingService;
-
 
     @Test
     void createBooking_whenBookingCreated_thenReturnStatusOkAndReturnBookingDtoBody() {
@@ -45,7 +42,6 @@ class BookingControllerTest {
         long ownerId = 0L;
         long bookingId = 0L;
         boolean approve = true;
-        BookingDto bookingDto = new BookingDto();
         ReturnBookingDto expectedDto = new ReturnBookingDto();
         when(bookingService.updateBookingApprove(ownerId, bookingId, approve)).thenReturn(expectedDto);
 

@@ -10,12 +10,11 @@ import ru.practicum.shareit.booking.dto.ReturnBookingDto;
 import ru.practicum.shareit.exceptions.IncorrectParameterException;
 import ru.practicum.shareit.exceptions.InvalidStatusException;
 import ru.practicum.shareit.exceptions.NotFoundException;
-import ru.practicum.shareit.item.ItemService;
-import ru.practicum.shareit.item.dto.ItemMapper;
+import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.UserService;
-import ru.practicum.shareit.user.userDto.UserMapper;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -27,15 +26,16 @@ public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
     private final BookingMapper bookingMapper;
     private final UserService userService;
-    private final UserMapper userMapper;
-    private final ItemMapper itemMapper;
-    private final ItemService itemService;
+    private final UserRepository userRepository;
+    private final ItemRepository itemRepository;
 
     @Override
     public ReturnBookingDto create(Long userId, BookingDto bookingDto) {
         Booking booking = bookingMapper.dtoToBooking(bookingDto);
-        User booker = userMapper.dtoToUser(userService.getUser(userId));
-        Item item = itemMapper.dtoToItem(itemService.getItem(bookingDto.getItemId(), userId));
+        User booker = (userRepository.findById(userId).orElseThrow(() ->
+                new NotFoundException("user id " + userId + " not found")));
+        Item item = itemRepository.findById(bookingDto.getItemId()).orElseThrow(() ->
+                new NotFoundException("Item id " + bookingDto.getItemId() + " not found"));
         User owner = item.getOwner();
         if (booker.getId().equals(owner.getId())) {
             throw new NotFoundException("owner cant be a booker");
@@ -53,7 +53,6 @@ public class BookingServiceImpl implements BookingService {
         booking.setStatus(BookingStatus.WAITING);
         return bookingMapper.returnDtoToBooking(bookingRepository.save(booking));
     }
-
 
     @Override
     public ReturnBookingDto getBooking(Long userId, Long bookingId) {
@@ -113,7 +112,6 @@ public class BookingServiceImpl implements BookingService {
         }
     }
 
-
     @Override
     public ReturnBookingDto updateBookingApprove(Long ownerId, long bookingId, boolean approve) {
         Booking booking = getBooking(bookingId);
@@ -130,7 +128,6 @@ public class BookingServiceImpl implements BookingService {
         }
         return bookingMapper.returnDtoToBooking(bookingRepository.save(booking));
     }
-
 
     private Booking getBooking(long bookingId) {
         return bookingRepository.findById(bookingId).orElseThrow(() ->

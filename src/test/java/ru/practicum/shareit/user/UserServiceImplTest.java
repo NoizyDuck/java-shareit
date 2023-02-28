@@ -12,45 +12,53 @@ import ru.practicum.shareit.user.userDto.UserMapper;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
-@Mock
-private UserRepository userRepository;
-@Spy
-private UserMapper userMapper = Mappers.getMapper(UserMapper.class);
-@InjectMocks
-private UserServiceImpl userServiceImpl;
-@Captor
-private ArgumentCaptor<User> userArgumentCaptor;
+    @Mock
+    private UserRepository userRepository;
+    @Spy
+    private UserMapper userMapper = Mappers.getMapper(UserMapper.class);
+    @InjectMocks
+    private UserServiceImpl userServiceImpl;
+    @Captor
+    private ArgumentCaptor<User> userArgumentCaptor;
+    UserCreateDto userCreateDto = new UserCreateDto(1L, "name", "email");
+    User user = new User(1L, "name", "email");
 
+    UserDto userDto = userMapper.userToDto(user);
     @Test
     void getUsers_whenGetUsers_returnUsersDtoList() {
-        List<User> userList = List.of(new User());
-        List<UserDto> expectedList = userList.stream().map(userMapper::userToDto).collect(Collectors.toList());
-        when(userRepository.findAll()).thenReturn(List.of(new User()));
+        when(userRepository.findAll()).thenReturn(List.of(user));
 
         List<UserDto> actualList = userServiceImpl.getUsers();
 
-        assertEquals(expectedList, actualList);
+        assertThat(actualList, hasSize(1));
+        assertThat(actualList.get(0).getId(), equalTo(user.getId()));
+        assertThat(actualList.get(0).getName(), equalTo(userDto.getName()));
+        assertThat(actualList.get(0).getEmail(), equalTo(userDto.getEmail()));
         verify(userRepository).findAll();
     }
 
     @Test
     void getUser_WhenUserFound_thenReturnUserDto() {
-        long userId = 0L;
-        User user = new User();
-        UserDto expectedUser = userMapper.userToDto(user);
+        long userId = 1L;
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
         UserDto actualUser = userServiceImpl.getUser(userId);
 
-        assertEquals(expectedUser, actualUser);
+        assertThat(actualUser.getId(), equalTo(user.getId()));
+        assertThat(actualUser.getName(), equalTo(user.getName()));
+        assertThat(actualUser.getEmail(), equalTo(user.getEmail()));
         verify(userRepository).findById(userId);
     }
 
@@ -64,13 +72,13 @@ private ArgumentCaptor<User> userArgumentCaptor;
 
     @Test
     void removeUser() {
-            long userId = 1L;
-            User user = new User();
+        long userId = 1L;
+        User user = new User();
 
-            when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-            userServiceImpl.removeUser(userId);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        userServiceImpl.removeUser(userId);
 
-            verify(userRepository).delete(user);
+        verify(userRepository).delete(user);
     }
 
     @Test
@@ -88,8 +96,8 @@ private ArgumentCaptor<User> userArgumentCaptor;
 
         userServiceImpl.updateUser(userId, newUserDto);
 
-       verify(userRepository).save(userArgumentCaptor.capture());
-       User savedUser = userArgumentCaptor.getValue();
+        verify(userRepository).save(userArgumentCaptor.capture());
+        User savedUser = userArgumentCaptor.getValue();
 
         assertEquals("newName", savedUser.getName());
         assertEquals("new@Email.ru", savedUser.getEmail());
@@ -139,14 +147,14 @@ private ArgumentCaptor<User> userArgumentCaptor;
 
     @Test
     void addUser_whenAddUser_returnUserDto() {
-        UserCreateDto userCreateDto = new UserCreateDto();
-        User userToSave = userMapper.createDtoToUser(userCreateDto);
-        UserDto expectedUserDto = userMapper.userToDto(userToSave);
-        when(userRepository.save(userToSave)).thenReturn(userToSave);
+        when(userMapper.createDtoToUser(any())).thenReturn(user);
+        when(userRepository.save(any())).thenReturn(user);
 
         UserDto actualUserDto = userServiceImpl.addUser(userCreateDto);
 
-        assertEquals(expectedUserDto, actualUserDto);
-        verify(userRepository).save(userToSave);
+        assertThat(actualUserDto.getId(), equalTo(user.getId()));
+        assertThat(actualUserDto.getName(), equalTo(user.getName()));
+        assertThat(actualUserDto.getEmail(), equalTo(user.getEmail()));
+        verify(userRepository).save(user);
     }
 }
