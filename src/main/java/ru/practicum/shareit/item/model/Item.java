@@ -1,9 +1,6 @@
 package ru.practicum.shareit.item.model;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.Hibernate;
 import ru.practicum.shareit.user.User;
 
@@ -15,6 +12,7 @@ import java.util.Objects;
 @Setter
 @ToString
 @RequiredArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "items")
 public class Item {
@@ -32,7 +30,7 @@ public class Item {
     @JoinColumn(name = "owner_id")
     private User owner;
     @Column(name = "request_id")
-    private Integer request;
+    private Long requestId;
 
     @Override
     public boolean equals(Object o) {

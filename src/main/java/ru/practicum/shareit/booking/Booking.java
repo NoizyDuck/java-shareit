@@ -1,9 +1,6 @@
 package ru.practicum.shareit.booking;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.Hibernate;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
@@ -12,14 +9,12 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-/**
- * TODO Sprint add-bookings.
- */
 @Getter
 @Setter
 @ToString
 @Entity
 @RequiredArgsConstructor
+@AllArgsConstructor
 @Table(name = "booking")
 
 public class Booking {

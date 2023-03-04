@@ -1,19 +1,20 @@
 package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.Service.PageRequestMapper;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.dto.ReturnBookingDto;
 import ru.practicum.shareit.exceptions.IncorrectParameterException;
 import ru.practicum.shareit.exceptions.InvalidStatusException;
 import ru.practicum.shareit.exceptions.NotFoundException;
-import ru.practicum.shareit.item.ItemService;
-import ru.practicum.shareit.item.dto.ItemMapper;
+import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.UserService;
-import ru.practicum.shareit.user.userDto.UserMapper;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,15 +26,16 @@ public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
     private final BookingMapper bookingMapper;
     private final UserService userService;
-    private final UserMapper userMapper;
-    private final ItemMapper itemMapper;
-    private final ItemService itemService;
+    private final UserRepository userRepository;
+    private final ItemRepository itemRepository;
 
     @Override
     public ReturnBookingDto create(Long userId, BookingDto bookingDto) {
         Booking booking = bookingMapper.dtoToBooking(bookingDto);
-        User booker = userMapper.dtoToUser(userService.getUser(userId));
-        Item item = itemMapper.dtoToItem(itemService.getItem(bookingDto.getItemId(), userId));
+        User booker = (userRepository.findById(userId).orElseThrow(() ->
+                new NotFoundException("user id " + userId + " not found")));
+        Item item = itemRepository.findById(bookingDto.getItemId()).orElseThrow(() ->
+                new NotFoundException("Item id " + bookingDto.getItemId() + " not found"));
         User owner = item.getOwner();
         if (booker.getId().equals(owner.getId())) {
             throw new NotFoundException("owner cant be a booker");
@@ -52,10 +54,9 @@ public class BookingServiceImpl implements BookingService {
         return bookingMapper.returnDtoToBooking(bookingRepository.save(booking));
     }
 
-
     @Override
     public ReturnBookingDto getBooking(Long userId, Long bookingId) {
-        Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> new NotFoundException("booking"));
+        Booking booking = getBooking(bookingId);
         Item item = booking.getItem();
         long bookerId = booking.getBooker().getId();
         long ownerId = item.getOwner().getId();
@@ -66,11 +67,12 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<ReturnBookingDto> getAllBookingByUser(Long userId, String state) {
+    public List<ReturnBookingDto> getAllBookingByUser(Long userId, String state, Integer from, Integer size) {
+        PageRequest pageRequest = PageRequestMapper.pageRequestValidaCreate(from, size);
         userService.getUser(userId);
         switch (state) {
             case "ALL":
-                return getReturnDtoList(bookingRepository.findAllByBooker_IdOrderByStartDesc(userId));
+                return getReturnDtoList(bookingRepository.findAllByBooker_IdOrderByStartDesc(userId, pageRequest));
             case "CURRENT":
                 return getReturnDtoList(bookingRepository.findAllByBooker_IdAndStartBeforeAndEndAfterOrderByStartDesc(userId,
                         LocalDateTime.now(), LocalDateTime.now()));
@@ -88,11 +90,12 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<ReturnBookingDto> getAllBookingByOwner(Long ownerId, String state) {
+    public List<ReturnBookingDto> getAllBookingByOwner(Long ownerId, String state, Integer from, Integer size) {
         userService.getUser(ownerId);
+        PageRequest pageRequest = PageRequestMapper.pageRequestValidaCreate(from, size);
         switch (state) {
             case "ALL":
-                return getReturnDtoList(bookingRepository.findAllByItem_Owner_IdOrderByStartDesc(ownerId));
+                return getReturnDtoList(bookingRepository.findAllByItem_Owner_IdOrderByStartDesc(ownerId, pageRequest));
             case "CURRENT":
                 return getReturnDtoList(bookingRepository.findAllByItem_Owner_IdAndStartBeforeAndEndAfterOrderByStartDesc(
                         ownerId, LocalDateTime.now(), LocalDateTime.now()));
@@ -108,7 +111,6 @@ public class BookingServiceImpl implements BookingService {
                 throw new InvalidStatusException();
         }
     }
-
 
     @Override
     public ReturnBookingDto updateBookingApprove(Long ownerId, long bookingId, boolean approve) {
@@ -126,7 +128,6 @@ public class BookingServiceImpl implements BookingService {
         }
         return bookingMapper.returnDtoToBooking(bookingRepository.save(booking));
     }
-
 
     private Booking getBooking(long bookingId) {
         return bookingRepository.findById(bookingId).orElseThrow(() ->

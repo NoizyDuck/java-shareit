@@ -2,6 +2,7 @@ package ru.practicum.shareit.user;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.userDto.UserCreateDto;
 import ru.practicum.shareit.user.userDto.UserDto;
@@ -17,17 +18,16 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping
-    public List<UserDto> getAllUser() {
-        List<UserDto> userList = userService.getUsers();
+    public ResponseEntity<List<UserDto>> getAllUser() {
         log.debug("List of all users");
-        return userList;
+        return  ResponseEntity.ok(userService.getUsers());
     }
 
     @GetMapping("/{id}")
-    public UserDto getUser(@PathVariable Long id) {
-        UserDto userDto = userService.getUser(id);
+    public  ResponseEntity<UserDto> getUser(@PathVariable Long id) {
+
         log.debug(String.format("User with id = %d", id));
-        return userDto;
+        return ResponseEntity.ok(userService.getUser(id));
     }
 
     @DeleteMapping("/{id}")
@@ -37,17 +37,16 @@ public class UserController {
     }
 
     @PatchMapping("/{userId}")
-    public UserDto updateUser(@RequestBody @Valid UserDto userDto, @PathVariable Long userId) {
-        UserDto saveUserDto = userService.updateUser(userId, userDto);
+    public ResponseEntity<UserDto> updateUser(@RequestBody @Valid UserDto userDto,
+                                              @PathVariable Long userId) {
         log.debug(String.format("User with id = %d updated", userId));
-        return saveUserDto;
+        return ResponseEntity.ok(userService.updateUser(userId, userDto));
     }
 
     @PostMapping
-    public UserDto addUser(@RequestBody @Valid UserCreateDto userDto) {
-        UserDto saveUserDto = userService.addUser(userDto);
-        log.debug(String.format("User with id = %d added", saveUserDto.getId()));
-        return saveUserDto;
+    public ResponseEntity<UserDto> addUser(@RequestBody @Valid UserCreateDto userDto) {
+        log.debug("User with added");
+        return ResponseEntity.ok(userService.addUser(userDto));
     }
 
 }

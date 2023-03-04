@@ -1,8 +1,12 @@
 package ru.practicum.shareit.booking.dto;
 
-import lombok.Value;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Value
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class ShortBookingDto {
     Long id;
     Long bookerId;
